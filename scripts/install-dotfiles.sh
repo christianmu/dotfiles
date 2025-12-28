@@ -30,3 +30,14 @@ if [ ! -f "$HOME/.gitconfig.local" ]; then
 EOL
   echo "📝 Created $HOME/.gitconfig.local (edit as needed)"
 fi
+
+# Bash
+link_file "$HOME/dotfiles/bash/bashrc" "$HOME/.bashrc"
+
+# Create local bash overrides if missing
+if [ ! -f "$HOME/.bashrc.local" ]; then
+  cat > "$HOME/.bashrc.local" <<'EOF'
+# Local bash settings (not versioned)
+EOF
+  echo "📝 Created ~/.bashrc.local"
+fi
