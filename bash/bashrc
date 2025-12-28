@@ -148,15 +148,49 @@ fi
 unset __conda_setup
 # <<< conda initialize <<<
 
-export PATH=$PATH:/usr/bin/
+# --- PATH cleanup ------------------------------------------------------------
 
-# PHPStorm
-export PATH="$PATH:/home/chris/Meine-Apps/PhpStorm-251.26927.60/bin/"
-export PATH=/usr/local/cuda/bin:$PATH
-export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
-export PATH="$HOME/bin:$PATH"
-export PATH="$HOME/.local/bin:$PATH"
-[ -f "$HOME/.secrets" ] && . "$HOME/.secrets"
+path_prepend() {
+  [ -d "$1" ] || return 0
+  case ":$PATH:" in *":$1:"*) : ;; *) PATH="$1:$PATH" ;; esac
+}
+
+path_append() {
+  [ -d "$1" ] || return 0
+  case ":$PATH:" in *":$1:"*) : ;; *) PATH="$PATH:$1" ;; esac
+}
+
+path_dedupe() {
+  local IFS=':'
+  local -a parts out
+  local p
+  read -ra parts <<< "$PATH"
+  for p in "${parts[@]}"; do
+    # normalize: remove trailing slash
+    p="${p%/}"
+    [ -n "$p" ] || continue
+    case ":${out[*]}:" in *":$p:"*) : ;; *) out+=("$p") ;; esac
+  done
+  PATH="$(IFS=':'; echo "${out[*]}")"
+}
+
+# Prefer user tools first
+path_prepend "$HOME/.local/bin"
+path_prepend "$HOME/bin"
+path_prepend "/usr/local/bin"
+path_prepend "/usr/local/sbin"
+
+# Optional tools (only if installed)
+path_prepend "/usr/local/cuda/bin"
+
+# PhpStorm (append, not prepend!)
+path_append "$HOME/Meine-Apps/PhpStorm-251.26927.60/bin"
+
+# Final cleanup
+path_dedupe
+export PATH
+
+# ----------------------------------------------------------------------------
 
 # Load local, machine-specific overrides (not versioned)
 [ -f ~/.bashrc.local ] && source ~/.bashrc.local
