@@ -28,7 +28,7 @@
     "enabled": false
   },
   "minimap": {
-    "show": "never"
+    "show": "always"
   },
   "cursor_blink": true,
   "file_types": {
