@@ -1,0 +1,82 @@
+pup – HTML-Parser für die Kommandozeile
+=====================================
+
+Kurzbeschreibung
+----------------
+pup ist ein CLI-Tool zum Auslesen von HTML mit CSS-Selektoren.
+Vergleichbar mit `jq` für JSON – nur für HTML.
+
+pup liest HTML über STDIN oder aus einer Datei
+und gibt gezielt Inhalte wie Text, Attribute oder HTML-Fragmente aus.
+
+
+Grundprinzip
+------------
+HTML-Quelle → pup → CSS-Selector → Ausgabe
+
+Beispiel:
+echo '<h1>Hello</h1>' | pup 'h1 text{}'
+→ Hello
+
+
+Typische Quellen
+----------------
+- curl https://example.com | pup ...
+- cat file.html | pup ...
+- pup -f file.html ...
+
+
+Wichtige Selektoren (CSS)
+-------------------------
+a            alle <a>-Links
+img          alle <img>-Tags
+div.main     <div class="main">
+#content     Element mit id="content"
+a.download   <a class="download">
+
+
+Ausgabe-Funktionen
+------------------
+text{}          Textinhalt ohne HTML
+attr{href}     Attributwert (z.B. href, src)
+html{}          inneres HTML
+outerHTML{}    Element inkl. Tag
+
+
+Häufige Beispiele
+-----------------
+Alle Links:
+curl URL | pup 'a attr{href}'
+
+Alle Bilder:
+curl URL | pup 'img attr{src}'
+
+Überschriften:
+curl URL | pup 'h1,h2 text{}'
+
+Erstes Element:
+curl URL | pup 'a attr{href}' -l 1
+
+Anzahl Treffer:
+curl URL | pup 'img' -n
+
+
+Wichtige Flags
+--------------
+-f file        HTML aus Datei lesen
+-n             Anzahl der Treffer ausgeben
+-l LEVEL       Tiefe begrenzen
+-p             HTML nicht escapen
+-h             Hilfe anzeigen
+
+
+Hinweis
+-------
+pup macht ohne Eingabe nichts.
+Beim Aufruf ohne Pipe wartet es auf STDIN.
+Beenden mit Ctrl+C.
+
+
+Version
+-------
+pup 0.4.0
