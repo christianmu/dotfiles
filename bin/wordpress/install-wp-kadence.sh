@@ -13,7 +13,6 @@ echo "------------------------------------"
 printf "+ Erstellt WordPress im einzugebenden Unterordner des Verzeichnisses ${YELLOW}/var/www/html/wordpress/${RESET}. \n"
 printf "+ Die Datenbank erhält den selben Namen wie dieser Unterordner.\n"
 printf "+ Kadence Blocks/Theme werden installiert/aktiviert.\n"
-printf "+ In welchem Verzeichnis diese Datei ausgeführt wird spielt keine Rolle.\n"
 echo
 
 # Interaktive Abfrage für den Datenbanknamen (wird auch für Namen des Installationsverzeichnisses verwendet)
