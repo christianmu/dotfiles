@@ -7,10 +7,10 @@
 // custom settings, run `zed: open default settings` from the
 // command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "icon_theme": "Bearded Icon Theme",
   "project_panel": {
     "hide_hidden": true
   },
-  "icon_theme": "Modern Icons (Light)",
   "agent": {
     "message_editor_min_lines": 6,
     "default_model": {

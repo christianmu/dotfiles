@@ -198,3 +198,4 @@ export PATH
 
 # Load local, machine-specific overrides (not versioned)
 [ -f ~/.bashrc.local ] && source ~/.bashrc.local
+export PATH="$HOME/.config/composer/vendor/bin:$PATH"
