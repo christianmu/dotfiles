@@ -15,7 +15,7 @@ printf "+ In welchem Verzeichnis diese Datei ausgeführt wird, spielt keine Roll
 printf "+ Die Datenbank erhält den selben Namen wie dieser Unterordner.\n"
 echo
 
-# Interaktive Abfrage für den Datenbanknamen (wird auch für Namen des Installationsverzeichnisses verwendet)
+# Interaktive Abfrage für den Datenbanknamen
 echo "Name für Installationsordner/Datenbank eingeben:"
 read DB_NAME
 
@@ -37,20 +37,20 @@ echo "Welche WordPress-Version soll installiert werden? (z.B. 6.2.2 oder leer la
 read WP_VERSION
 
 # Datenbankinformationen
-DB_USER="admin"           # Datenbankbenutzer
-DB_PASS="Flock"           # Passwort des Datenbankbenutzers
-DB_HOST="localhost"       # Datenbankhost (meist localhost)
+DB_USER="admin"
+DB_PASS="Flock"
+DB_HOST="localhost"
 
 # WordPress Installationspfad
-WP_URL="http://localhost/wordpress/$DB_NAME"    # URL der WordPress-Installation
-WP_ADMIN_URL="$WP_URL/wp-admin"                 # Volle URL für das Dashboard
+WP_URL="http://localhost/wordpress/$DB_NAME"
+WP_ADMIN_URL="$WP_URL/wp-admin"
 
 # Verzeichnis für die Installation erstellen und wechseln
 mkdir -p "$WP_PATH"
-sudo chown -R www-data:www-data "$WP_PATH"      # Rechte des Installationsverzeichnisses anpassen
+sudo chown -R www-data:www-data "$WP_PATH"
 cd "$WP_PATH" || exit 1
 
-# WordPress herunterladen (gewählte Version oder neueste) - **US-englisch**
+# WordPress herunterladen (gewählte Version oder neueste) - US-englisch
 if [ -n "$WP_VERSION" ]; then
     echo "Lade WordPress-Version $WP_VERSION (en_US) herunter..."
     wp core download --version="$WP_VERSION" --locale=en_US
@@ -61,52 +61,52 @@ fi
 
 # WordPress-Konfigurationsdatei erstellen
 wp core config --dbname="$DB_NAME" --dbuser="$DB_USER" --dbpass="$DB_PASS" --dbhost="$DB_HOST" --extra-php <<'PHP'
-define('WP_DEBUG', true);  // Anzeige von PHP-Warnings, Notices und Deprecations 
-define('WP_DISABLE_FATAL_ERROR_HANDLER', true); // Anzeige von Absturzfehlern statt "freundlicher" Fehlerseite
+define('WP_DEBUG', true);
+define('WP_DISABLE_FATAL_ERROR_HANDLER', true);
 
 if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-    define( 'WP_DEBUG_LOG', true ); // Fehler in die Logdatei schreiben
-    define( 'WP_DEBUG_DISPLAY', true ); // Fehler im Browser anzeigen
+    define( 'WP_DEBUG_LOG', true );
+    define( 'WP_DEBUG_DISPLAY', true );
 } else {
     define( 'WP_DEBUG_LOG', false );
     define( 'WP_DEBUG_DISPLAY', false );
 }
 
-define('WP_ENVIRONMENT_TYPE', 'local'); // Umgebung festlegen, API-Zugriff ohne TLS möglich.
-PHP
+define('WP_ENVIRONMENT_TYPE', 'local');
 
-# Direkt-Upload ohne FTP ermöglichen
-{
-echo ""
-echo "/** Hochladen von Dateien über das Dashboard ohne FTP-Verbindung ermöglichen */"
-echo "define('FS_METHOD', 'direct');"
-echo "/** Deaktiviere automatische Updates */"
-echo "define('AUTOMATIC_UPDATER_DISABLED', true);"
-echo "define('WP_AUTO_UPDATE_CORE', false);"
-echo "define('DISALLOW_FILE_MODS', false);"
-} >> "$WP_PATH/wp-config.php"
+/** Hochladen von Dateien über das Dashboard ohne FTP-Verbindung ermöglichen */
+define('FS_METHOD', 'direct');
+
+/** Deaktiviere automatische Updates */
+define('AUTOMATIC_UPDATER_DISABLED', true);
+define('WP_AUTO_UPDATE_CORE', false);
+define('DISALLOW_FILE_MODS', false);
+PHP
 
 # Datenbank erstellen
 wp db create
 
 # WordPress installieren
-wp core install --url="$WP_URL" --title="$DB_NAME" --admin_email="info@musiol.io" --admin_user="Hans" --admin_password="Wilde" --skip-email
+wp core install \
+  --url="$WP_URL" \
+  --title="$DB_NAME" \
+  --admin_email="info@musiol.io" \
+  --admin_user="Hans" \
+  --admin_password="Wilde" \
+  --skip-email
 
-# Sprache sicher auf US-Englisch setzen (falls WP doch eine andere Sprache zieht)
+# Sprache sicher auf US-Englisch setzen
 wp language core install en_US
 wp site switch-language en_US
 
-# Entfernen der Standard-Plugins "Hello Dolly" und "Akismet"
+# Entfernen der Standard-Plugins
 echo "Entferne Standard-Plugins Hello Dolly und Akismet..."
 wp plugin delete hello akismet
 
-# Den aktuellen Benutzer zur Gruppe www-data hinzufügen (wirkt erst nach neuer Anmeldung)
-sudo usermod -aG www-data "$USER"
-
 # Rechte des Installationsverzeichnisses anpassen
-sudo chown -R www-data:www-data "/var/www/html/wordpress/$DB_NAME"
+sudo chown -R www-data:www-data "$WP_PATH"
 
-# .htaccess Datei erstellen (mit Sicherheit)
+# .htaccess Datei erstellen
 sudo touch "$WP_PATH/.htaccess"
 sudo chmod 664 "$WP_PATH/.htaccess"
 sudo tee "$WP_PATH/.htaccess" > /dev/null <<EOF
@@ -134,7 +134,7 @@ fi
 echo "Setze Permalinkstruktur auf 'Beitragsname'..."
 wp option update permalink_structure "/%postname%/"
 
-# Permalinkstruktur neu speichern, um WordPress zu "triggern"
+# Permalinkstruktur neu speichern
 wp rewrite flush --hard
 
 # Zeitzone und Formate setzen

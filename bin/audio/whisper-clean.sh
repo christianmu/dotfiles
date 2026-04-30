@@ -9,7 +9,7 @@ INPUT="$1"
 
 if [ -z "$INPUT" ]; then
   echo "❌ Bitte JSON-Datei angeben."
-  echo "Beispiel: ./whisper-clean-learn.sh lesson26.json"
+  echo "Beispiel: ./whisper-clean.sh lesson26.json"
   exit 1
 fi
 
@@ -34,4 +34,3 @@ jq '{
 
 echo "✅ Lern-JSON erstellt:"
 echo "   $OUTPUT"
-
