@@ -14,7 +14,7 @@ echo "💾 Wie soll die Ausgabedatei heißen? (ohne Endung)"
 read -r NAME
 
 if [ -z "$NAME" ]; then
-    echo "⚠️ Kein Name eingegeben – verwende Standardnamen: audio"
+    echo "⚠️ Kein Name eingegeben – verwende den Standardnamen: audio"
     NAME="audio"
 fi
 
@@ -24,7 +24,7 @@ echo
 echo "🎧 Lade Audio als Original-WebM (Opus) herunter …"
 yt-dlp \
   --no-playlist \
-  -f bestaudio \
+  -f "bestaudio[ext=webm]" \
   -o "${NAME}.%(ext)s" \
   "$LINK"
 
@@ -37,15 +37,16 @@ echo
 echo "📝 Starte Whisper-Transkription …"
 echo "   → Datei   : $AUDIO_FILE"
 echo "   → Sprache : cs"
-echo "   → Modell  : medium"
-echo "   → Gerät   : cpu"
+echo "   → Modell  : large"
+echo "   → Gerät   : cuda"
 echo
 
 whisper "$AUDIO_FILE" \
   --language cs \
   --task transcribe \
-  --model medium \
-  --device cpu
+  --model large \
+  --device cuda \
+  --output_format all
 
 echo
 echo "✅ Fertig!"
