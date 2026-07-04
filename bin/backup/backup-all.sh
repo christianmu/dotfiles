@@ -28,7 +28,7 @@ fi
 
 # --- Datenbank-Backup ---
 echo "Starte Datenbank-Backup..."
-BACKUP_DIR_DB="$MOUNTPOINT/backup-databases"
+BACKUP_DIR_DB="$MOUNTPOINT/backup-databases/backup-databases_$DATE"
 mkdir -p "$BACKUP_DIR_DB"
 
 databases=$(mysql -u$MYSQL_USER -p$MYSQL_PASS -e "SHOW DATABASES;" | grep -Ev "(Database|information_schema|performance_schema)")

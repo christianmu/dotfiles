@@ -6,7 +6,7 @@ MOUNTPOINT="/media/chris/df87f35c-96a8-4369-9a9a-d3f32829b989"
 DISK_UUID="df87f35c-96a8-4369-9a9a-d3f32829b989"
 
 BACKUP_BASE="$MOUNTPOINT/backup-databases"
-NEXTCLOUD_DIR="/home/chris/Nextcloud/9_Projekte/db-backups"
+NEXTCLOUD_DIR="/home/chris/Nextcloud/00_Sync/9_Projekte/db-backups"
 
 TS="$(date +"%Y-%m-%d_%H-%M")"
 

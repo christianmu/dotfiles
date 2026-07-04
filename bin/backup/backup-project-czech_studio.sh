@@ -9,7 +9,7 @@ set -euo pipefail
 SRC="/var/www/html/wordpress/mu_czech_studio/"
 
 # ZIEL-BASIS: Ordner in Nextcloud für dieses Projekt
-DEST_BASE="/home/chris/Nextcloud/9_Projekte/Czech_Studio/mu_czech_studio-backups"
+DEST_BASE="/home/chris/Nextcloud/00_Sync/9_Projekte/Czech_Studio/mu_czech_studio-backups"
 
 # ============================
 # Ab hier nichts mehr ändern
