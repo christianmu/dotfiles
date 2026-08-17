@@ -1,0 +1,11 @@
+#!/bin/bash
+
+echo "🔗 Bitte gib den YouTube-Link ein:"
+read -r URL
+
+yt-dlp \
+  --js-runtimes node \
+  --extractor-args "youtube:player_client=web_embedded" \
+  -f "bv*[height<=1080]+ba/b[height<=1080]" \
+  --merge-output-format mp4 \
+  "$URL"
