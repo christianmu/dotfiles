@@ -218,3 +218,7 @@ command -v pyenv >/dev/null 2>&1 && eval "$(pyenv init -)"
 
 # Load local, machine-specific overrides (not versioned)
 [ -f ~/.bashrc.local ] && source ~/.bashrc.local
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:/home/chris/.lmstudio/bin"
+# End of LM Studio CLI section
+

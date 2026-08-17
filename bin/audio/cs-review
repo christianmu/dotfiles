@@ -1,0 +1,99 @@
+#!/usr/bin/env python3
+"""Terminal-Variante von /cs-review: schnelles Wiederholen mit 3-Stufen-Status."""
+
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+STATUS_FILE = "0_status.json"
+ORDER = {"neu": 0, "nochmal": 1}
+
+
+def load_status(folder: Path) -> dict:
+    status_path = folder / STATUS_FILE
+    status = json.loads(status_path.read_text()) if status_path.exists() else {}
+    bases = sorted(p.stem[:-3] for p in folder.glob("*_de.txt"))
+    changed = False
+    for base in bases:
+        if base not in status:
+            status[base] = "neu"
+            changed = True
+    if changed:
+        save_status(folder, status)
+    return status
+
+
+def save_status(folder: Path, status: dict) -> None:
+    (folder / STATUS_FILE).write_text(
+        json.dumps(status, ensure_ascii=False, indent=2)
+    )
+
+
+def build_queue(status: dict) -> list:
+    pending = [b for b, s in status.items() if s in ORDER]
+    return sorted(pending, key=lambda b: (ORDER[status[b]], b))
+
+
+def ask_rating(base: str) -> str:
+    while True:
+        answer = input(
+            f"  [{base}] Wie gut kanntest du das? "
+            "(n=Neu, w=Nochmal, g=Gelernt, q=Abbrechen): "
+        ).strip().lower()
+        if answer in ("n", "neu"):
+            return "neu"
+        if answer in ("w", "nochmal"):
+            return "nochmal"
+        if answer in ("g", "gelernt"):
+            return "gelernt"
+        if answer in ("q", "quit", "abbrechen"):
+            return "quit"
+        print("  Bitte n, w, g oder q eingeben.")
+
+
+def main() -> None:
+    folder = Path(sys.argv[1]).expanduser().resolve() if len(sys.argv) > 1 else Path.cwd()
+    if not folder.is_dir():
+        sys.exit(f"Kein Ordner: {folder}")
+
+    status = load_status(folder)
+    queue = build_queue(status)
+
+    if not queue:
+        print("Keine offenen Sätze (alles 'gelernt' oder Ordner leer).")
+        return
+
+    print(f"{len(queue)} Sätze in der Warteschlange ({folder})\n")
+
+    reviewed = 0
+    for base in queue:
+        de_text = (folder / f"{base}_de.txt").read_text().strip()
+        cs_text = (folder / f"{base}_cs.txt").read_text().strip()
+        cs_mp3 = folder / f"{base}_cs.mp3"
+
+        print(f"DE: {de_text}")
+        subprocess.run(["paplay", str(cs_mp3)], check=False)
+        print(f"CS: {cs_text}")
+
+        rating = ask_rating(base)
+        if rating == "quit":
+            break
+
+        status[base] = rating
+        save_status(folder, status)
+        reviewed += 1
+        print()
+
+    counts = {"neu": 0, "nochmal": 0, "gelernt": 0}
+    for s in status.values():
+        counts[s] += 1
+    print(
+        f"Fertig. {reviewed} bewertet in dieser Runde. "
+        f"Insgesamt: {counts['neu']} neu, {counts['nochmal']} nochmal, "
+        f"{counts['gelernt']} gelernt."
+    )
+
+
+if __name__ == "__main__":
+    main()
